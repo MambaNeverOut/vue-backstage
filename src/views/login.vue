@@ -40,17 +40,20 @@ export default {
   },
   methods: {
     login() {
+      // 表单验证
       this.$refs.form.validate(v => {
         if (v) {
           this.axios.post("login", this.form).then(res => {
             console.log(res);
-            if (res.data.message === 400) {
+            if (res.data.meta.status === 400) {
               this.$message.error("亲！" + res.data.meta.msg);
             } else {
               this.$message({
                 message: "恭喜亲，您登录成功了",
                 type: "success"
               });
+              localStorage.setItem("token", res.data.data.token);
+              this.$router.push("./home");
             }
           });
         } else {
