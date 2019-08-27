@@ -6,8 +6,14 @@
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="search">
-      <el-input placeholder="请输入内容" class="input-with-select">
-        <el-button slot="append" icon="el-icon-search"></el-button>
+      <el-input
+        @clear="loadUserList()"
+        clearable
+        placeholder="请输入内容"
+        v-model="search"
+        class="input-with-select"
+      >
+        <el-button slot="append" icon="el-icon-search" @click="searchUsers()"></el-button>
       </el-input>
       <el-button type="success" plain>添加用户</el-button>
     </div>
@@ -50,7 +56,8 @@ export default {
   components: {},
   data() {
     return {
-      tableData: []
+      tableData: [],
+      search: ""
     };
   },
   methods: {
@@ -73,10 +80,16 @@ export default {
           }
         });
     },
+    searchUsers() {
+      this.getUsers();
+    },
+    loadUserList() {
+      this.getUsers();
+    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagesize = val;
-      this.pagenum = 1;
+      // this.pagenum = 1;
       this.getUsers();
     },
     handleCurrentChange(val) {
