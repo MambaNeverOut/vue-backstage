@@ -33,6 +33,15 @@
         <el-button type="success" icon="el-icon-check" circle></el-button>
       </el-table-column>
     </el-table>
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4, 6, 8]"
+      :page-size="2"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    ></el-pagination>
   </div>
 </template>
 
@@ -63,6 +72,17 @@ export default {
             this.total = res.data.data.total;
           }
         });
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pagesize = val;
+      this.pagenum = 1;
+      this.getUsers();
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.pagenum = val;
+      this.getUsers();
     }
   },
   created() {
