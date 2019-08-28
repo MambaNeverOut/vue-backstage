@@ -36,9 +36,16 @@
         </template>
       </el-table-column>
       <el-table-column prop="address" label="操作">
-        <el-button type="primary" icon="el-icon-edit" circle></el-button>
-        <el-button type="danger" icon="el-icon-delete" circle></el-button>
-        <el-button type="success" icon="el-icon-check" circle></el-button>
+        <template v-slot="scope">
+          <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            circle
+            @click="showDelUserMsgBox(scope.row.id)"
+          ></el-button>
+          <el-button type="success" icon="el-icon-check" circle></el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页功能 -->
@@ -118,7 +125,6 @@ export default {
     },
     addUser() {
       this.dialogFormVisibleAdd = false;
-
       this.axios.post("users", this.form).then(res => {
         console.log(res);
         if (res.data.meta.status === 201) {
@@ -126,12 +132,39 @@ export default {
           this.getUsers();
           this.form = {};
         } else {
-          this.$message.error();
+          this.$message.error("添加用户失败");
         }
       });
     },
+
     showAddUserDia() {
       this.dialogFormVisibleAdd = true;
+    },
+    showDelUserMsgBox(userId) {
+      this.$confirm("删除用户?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.axios.delete(`user/${userId}`);
+          if (res.data.meata.status === 200) {
+            this.pagenum = 1;
+            this.getUsers();
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          } else {
+            this.$message.error("删除失败");
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
     },
     loadUserList() {
       this.getUsers();
