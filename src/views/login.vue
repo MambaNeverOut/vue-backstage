@@ -1,15 +1,18 @@
 <template>
   <div class="login">
     <el-form ref="form" :model="form" :rules="rules">
+      <!-- 用户头像 -->
       <div class="headerPic">
         <img src="../assets/img.gif" alt />
       </div>
+      <!-- 用户名密码输入框 -->
       <el-form-item prop="username">
         <el-input v-model="form.username" placeholder="账户"></el-input>
       </el-form-item>
       <el-form-item prop="password">
         <el-input v-model="form.password" placeholder="密码"></el-input>
       </el-form-item>
+      <!-- 登录按钮 -->
       <el-button style="width: 100%" type="primary" @click="login" plain>登录</el-button>
     </el-form>
   </div>

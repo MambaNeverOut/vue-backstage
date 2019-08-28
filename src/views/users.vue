@@ -5,6 +5,7 @@
       <el-breadcrumb-item :to="{ path: '/home'}">用户管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
+    <!-- 搜索框 -->
     <div class="search">
       <el-input
         @clear="loadUserList()"
@@ -15,8 +16,9 @@
       >
         <el-button slot="append" icon="el-icon-search" @click="searchUsers()"></el-button>
       </el-input>
-      <el-button type="success" plain>添加用户</el-button>
+      <el-button type="success" plain @click="showAddUserDia()">添加用户</el-button>
     </div>
+    <!-- 用户列表 -->
     <el-table :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="username" label="姓名" width="180"></el-table-column>
@@ -39,6 +41,7 @@
         <el-button type="success" icon="el-icon-check" circle></el-button>
       </el-table-column>
     </el-table>
+    <!-- 分页功能 -->
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -48,16 +51,46 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+    <!-- 对话框 -->
+    <!-- 添加用户对话框 -->
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="formLabelWidth">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密 码" label-width="formLabelWidth">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮 箱" label-width="formLabelWidth">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电 话" label-width="formLabelWidth">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+        <el-button type="primary" @click="AddUser() ">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { log } from "util";
 export default {
   components: {},
   data() {
     return {
       tableData: [],
-      search: ""
+      search: "",
+      dialogFormVisibleAdd: false,
+      form: {
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
+      }
     };
   },
   methods: {
@@ -82,6 +115,23 @@ export default {
     },
     searchUsers() {
       this.getUsers();
+    },
+    addUser() {
+      this.dialogFormVisibleAdd = false;
+
+      this.axios.post("users", this.form).then(res => {
+        console.log(res);
+        if (res.data.meta.status === 201) {
+          this.$message.success(res.data.meata.msg);
+          this.getUsers();
+          this.form = {};
+        } else {
+          this.$message.error();
+        }
+      });
+    },
+    showAddUserDia() {
+      this.dialogFormVisibleAdd = true;
     },
     loadUserList() {
       this.getUsers();

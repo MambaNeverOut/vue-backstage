@@ -1,8 +1,11 @@
 <template>
   <div class="home">
     <el-container>
+      <!-- 左上角logo -->
       <el-aside width="200px">
         <div class="logo"></div>
+
+        <!-- 侧边栏 -->
         <el-menu
           default-active="2"
           class="el-menu-vertical-demo"
@@ -27,7 +30,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
+
       <el-container>
+        <!-- 顶部栏 -->
         <el-header>
           <i class="el-icon-tickets"></i>
           <h3>后台管理系统</h3>
@@ -36,6 +41,7 @@
             <a @click="signOut">退出</a>
           </div>
         </el-header>
+        <!-- 内容区 -->
         <el-main>
           <router-view></router-view>
         </el-main>
