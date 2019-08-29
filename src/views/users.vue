@@ -19,7 +19,7 @@
       <el-button type="success" plain @click="showAddUserDia()">添加用户</el-button>
     </div>
     <!-- 用户列表 -->
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table height="300px" :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="username" label="姓名" width="180"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
@@ -37,7 +37,12 @@
       </el-table-column>
       <el-table-column prop="address" label="操作">
         <template v-slot="scope">
-          <el-button type="primary" icon="el-icon-edit" circle></el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            circle
+            @click="showEditUserDia(scope.row.id)"
+          ></el-button>
           <el-button
             type="danger"
             icon="el-icon-delete"
@@ -80,6 +85,24 @@
         <el-button type="primary" @click="AddUser() ">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑用户对话框 -->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="formLabelWidth">
+          <el-input disabled v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮 箱" label-width="formLabelWidth">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电 话" label-width="formLabelWidth">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary" @click="editUser()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -92,6 +115,7 @@ export default {
       tableData: [],
       search: "",
       dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
       form: {
         username: "",
         password: "",
@@ -136,8 +160,13 @@ export default {
         }
       });
     },
-
+    editUser() {
+      this.axios.put(`user/${this.form.id}`, this.form);
+      this.dialogFormVisibleEdit = false;
+      this.getUsers();
+    },
     showAddUserDia() {
+      this.form = {};
       this.dialogFormVisibleAdd = true;
     },
     showDelUserMsgBox(userId) {
@@ -166,13 +195,17 @@ export default {
           });
         });
     },
+    showEditUserDia(user) {
+      this.form = user;
+      this.dialogFormVisibleEdit = true;
+    },
     loadUserList() {
       this.getUsers();
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pagesize = val;
-      // this.pagenum = 1;
+      this.pagenum = 1;
       this.getUsers();
     },
     handleCurrentChange(val) {
