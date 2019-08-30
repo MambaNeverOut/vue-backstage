@@ -70,7 +70,7 @@ export default {
       const AUTH_TOKEN = localStorage.getItem("token");
       this.axios.defaults.headers.common["Authorization"] = AUTH_TOKEN;
       this.axios.get("menus").then(res => {
-        console.log(res);
+        // console.log(res);
         this.menusList = res.data.data;
       });
     },

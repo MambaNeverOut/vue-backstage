@@ -11,7 +11,7 @@
         @clear="loadUserList()"
         clearable
         placeholder="请输入内容"
-        v-model="search"
+        v-model="query"
         class="input-with-select"
       >
         <el-button slot="append" icon="el-icon-search" @click="searchUsers()"></el-button>
@@ -19,7 +19,7 @@
       <el-button type="success" plain @click="showAddUserDia()">添加用户</el-button>
     </div>
     <!-- 用户列表 -->
-    <el-table height="300px" :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%">
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="username" label="姓名" width="180"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
@@ -42,19 +42,19 @@
       </el-table-column>
       <el-table-column prop="address" label="操作">
         <template v-slot="scope">
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            circle
-            @click="showEditUserDia(scope.row.id)"
-          ></el-button>
+          <el-button type="primary" icon="el-icon-edit" circle @click="showEditUserDia(scope.row)"></el-button>
           <el-button
             type="danger"
             icon="el-icon-delete"
             circle
             @click="showDelUserMsgBox(scope.row.id)"
           ></el-button>
-          <el-button type="success" icon="el-icon-check" circle></el-button>
+          <el-button
+            type="success"
+            icon="el-icon-check"
+            circle
+            @click="showSetUserRoleDia(scope.row)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -87,7 +87,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
-        <el-button type="primary" @click="AddUser() ">确 定</el-button>
+        <el-button type="primary" @click="addUser() ">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 编辑用户对话框 -->
@@ -108,6 +108,22 @@
         <el-button type="primary" @click="editUser()">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisibleRole">
+      <el-form :model="form">
+        <el-form-item label="用户名" label-width="100px">{{currUserName}}</el-form-item>
+        <el-form-item label="角色" label-width="100px">
+          <el-select v-model="currRoleId" placeholder="请选择活动区域">
+            <el-option label="请选择" :value="-1"></el-option>
+            <el-option :label="item.roleName" :value="item.id" v-for="(item,i) in roles" :key="i"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleRole = false">取 消</el-button>
+        <el-button type="primary" @click="setRole()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -118,15 +134,26 @@ export default {
   data() {
     return {
       tableData: [],
-      search: "",
+      query: "",
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
+      dialogFormVisibleRole: false,
       form: {
         username: "",
         password: "",
         email: "",
         mobile: ""
-      }
+      },
+      // 分页数据
+      total: -1,
+      pagenum: 1,
+      pagesize: 2,
+      // 分配角色
+      currRoleId: -1,
+      currUserId: -1,
+      currUserName: "",
+      // 保存角色数据
+      roles: []
     };
   },
   methods: {
@@ -136,9 +163,9 @@ export default {
       this.axios
         .get("users", {
           params: {
-            query: "",
-            pagenum: 1,
-            pagesize: 2
+            query: this.query,
+            pagenum: this.pagenum,
+            pagesize: this.pagesize
           }
         })
         .then(res => {
@@ -155,9 +182,9 @@ export default {
     addUser() {
       this.dialogFormVisibleAdd = false;
       this.axios.post("users", this.form).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data.meta.status === 201) {
-          this.$message.success(res.data.meata.msg);
+          this.$message.success(res.data.meta.msg);
           this.getUsers();
           this.form = {};
         } else {
@@ -166,12 +193,20 @@ export default {
       });
     },
     editUser() {
-      this.axios.put(`user/${this.form.id}`, this.form);
+      this.axios.put(`users/${this.form.id}`, this.form);
       this.dialogFormVisibleEdit = false;
       this.getUsers();
     },
+    setRole() {
+      this.axios
+        .put(`users/${this.currUserId}/role`, { rid: this.currRoleId })
+        .then(res => {
+          console.log(res);
+        });
+      this.dialogFormVisibleRole = false;
+    },
     changeUserState(user) {
-      this.axios.put(`user/${user.id}/state/${user.mg_state}`);
+      this.axios.put(`users/${user.id}/state/${user.mg_state}`);
     },
     showAddUserDia() {
       this.form = {};
@@ -183,9 +218,9 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
-          this.axios.delete(`user/${userId}`);
-          if (res.data.meata.status === 200) {
+        .then(async () => {
+          const res = await this.axios.delete(`users/${userId}`);
+          if (res.data.meta.status === 200) {
             this.pagenum = 1;
             this.getUsers();
             this.$message({
@@ -207,17 +242,32 @@ export default {
       this.form = user;
       this.dialogFormVisibleEdit = true;
     },
+    showSetUserRoleDia(user) {
+      this.currUserName = user.username;
+      this.currUserId = user.id;
+      // 获取所有的角色
+      this.axios.get(`roles`).then(res => {
+        // console.log(res);
+        this.roles = res.data.data;
+      });
+      // 获取当前用户的角色id
+      this.axios.get(`users/${user.id}`).then(res => {
+        console.log(res);
+        this.currRoleId = res.data.data.rid;
+      });
+      this.dialogFormVisibleRole = true;
+    },
     loadUserList() {
       this.getUsers();
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      // console.log(`每页 ${val} 条`);
       this.pagesize = val;
       this.pagenum = 1;
       this.getUsers();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      // console.log(`当前页: ${val}`);
       this.pagenum = val;
       this.getUsers();
     }

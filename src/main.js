@@ -14,6 +14,7 @@ Vue.use(ElementUI)
 // 配置全局axios请求的baseURL
 // axios.defaults.baseURL = "http://3.112.132.86:8888/api/private/v1/"
 axios.defaults.baseURL = "http://www.xiaomadagege.cn:8888/api/private/v1/"
+// axios.defaults.baseURL = "http://54.65.230.22:8878/api/private/v1/"
 // axios.defaults.baseURL = 'http://3.112.132.86:8878'
 
 
