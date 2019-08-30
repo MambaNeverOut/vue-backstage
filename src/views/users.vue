@@ -158,8 +158,6 @@ export default {
   },
   methods: {
     getUsers() {
-      const AUTH_TOKEN = localStorage.getItem("token");
-      this.axios.defaults.headers.common["Authorization"] = AUTH_TOKEN;
       this.axios
         .get("users", {
           params: {
@@ -182,7 +180,6 @@ export default {
     addUser() {
       this.dialogFormVisibleAdd = false;
       this.axios.post("users", this.form).then(res => {
-        // console.log(res);
         if (res.data.meta.status === 201) {
           this.$message.success(res.data.meta.msg);
           this.getUsers();
@@ -247,12 +244,10 @@ export default {
       this.currUserId = user.id;
       // 获取所有的角色
       this.axios.get(`roles`).then(res => {
-        // console.log(res);
         this.roles = res.data.data;
       });
       // 获取当前用户的角色id
       this.axios.get(`users/${user.id}`).then(res => {
-        console.log(res);
         this.currRoleId = res.data.data.rid;
       });
       this.dialogFormVisibleRole = true;

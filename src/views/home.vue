@@ -67,8 +67,6 @@ export default {
   },
   methods: {
     getMenus() {
-      const AUTH_TOKEN = localStorage.getItem("token");
-      this.axios.defaults.headers.common["Authorization"] = AUTH_TOKEN;
       this.axios.get("menus").then(res => {
         // console.log(res);
         this.menusList = res.data.data;
@@ -77,7 +75,7 @@ export default {
     signOut() {
       localStorage.clear();
       this.$message.success("退出成功");
-      this.$router.push("./login");
+      this.$router.push({ name: "login" });
     }
   },
   created() {
