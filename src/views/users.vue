@@ -63,8 +63,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
-      :page-sizes="[2, 4, 6, 8]"
-      :page-size="2"
+      :page-sizes="[2, 5, 10]"
+      :page-size="5"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
@@ -147,7 +147,7 @@ export default {
       // 分页数据
       total: -1,
       pagenum: 1,
-      pagesize: 2,
+      pagesize: 5,
       // 分配角色
       currRoleId: -1,
       currUserId: -1,
