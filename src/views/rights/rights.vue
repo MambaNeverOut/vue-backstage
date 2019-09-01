@@ -26,7 +26,6 @@
 <script>
 import { log } from "util";
 export default {
-  components: {},
   data() {
     return {
       rightList: []

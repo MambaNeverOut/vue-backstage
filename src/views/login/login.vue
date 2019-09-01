@@ -3,7 +3,7 @@
     <el-form ref="form" :model="form" :rules="rules">
       <!-- 用户头像 -->
       <div class="headerPic">
-        <img src="../assets/img.gif" alt />
+        <img src="@/assets/img.gif" alt />
       </div>
       <!-- 用户名密码输入框 -->
       <el-form-item prop="username">

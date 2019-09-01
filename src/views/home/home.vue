@@ -96,7 +96,7 @@ export default {
       background: #545c64;
       .logo {
         height: 60px;
-        background: url(../assets/logo.jpg);
+        background: url(../../assets/logo.jpg);
         background-size: cover;
         background-color: #fff;
       }
