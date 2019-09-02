@@ -60,6 +60,7 @@
       <!-- 
       -->
       <el-tree
+        ref="tree"
         :data="treeList"
         show-checkbox
         node-key="id"
@@ -106,7 +107,6 @@ export default {
     async showSetRightDia(role) {
       this.currRoleId = role.id;
       const res = await this.axios.get(`rights/tree`);
-      console.log(res);
       this.treeList = res.data.data;
       // 选中角色拥有的权限
       let arrtemp2 = [];
@@ -123,7 +123,16 @@ export default {
       this.dialogFormVisibleRight = true;
     },
     setRoleRight() {
-      // this.axios.post(`roles/${this.currRoleId}/rights`, rid).then(res => {});
+      let arr1 = this.$refs.tree.getCheckedKeys();
+      let arr2 = this.$refs.tree.getHalfCheckedKeys();
+      let arr = [...arr1, ...arr2];
+      this.axios
+        .post(`roles/${this.currRoleId}/rights`, { rids: arr.join(",") })
+        .then(res => {
+          console.log(res);
+        });
+      this.getRoleList();
+      this.dialogFormVisibleRight = false;
     }
   },
   created() {
