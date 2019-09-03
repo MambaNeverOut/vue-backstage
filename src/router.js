@@ -5,10 +5,13 @@ import home from '@/views/home/home.vue'
 import users from '@/views/users/users.vue'
 import rights from '@/views/rights/rights.vue'
 import role from '@/views/rights/role.vue'
+import {
+  Message
+} from 'element-ui';
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [{
@@ -43,3 +46,22 @@ export default new Router({
     }
   ]
 })
+
+// 设置全局路由守卫，如果没有token则返回登陆页面
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') {
+    next()
+  } else {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      Message.warning('亲，请先登录')
+      router.push({
+        name: 'login'
+      });
+      return
+    }
+    next()
+  }
+})
+
+export default router
