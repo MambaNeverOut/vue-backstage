@@ -1,10 +1,12 @@
 <template>
   <div class="users">
-    <el-breadcrumb separator="/">
+    <!-- <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/home'}">用户管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    </el-breadcrumb>-->
+    <bread-crumb level1="用户管理" level2="用户列表"></bread-crumb>
+
     <!-- 搜索框 -->
     <div class="search">
       <el-input

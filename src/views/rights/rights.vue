@@ -46,7 +46,4 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.el-table {
-  margin-top: 20px;
-}
 </style>

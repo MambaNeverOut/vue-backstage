@@ -1,5 +1,5 @@
 <template>
-  <el-breadcrumb separator="/">
+  <el-breadcrumb separator="/" style="margin-bottom: 15px">
     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
     <el-breadcrumb-item :to="{ path: '/home'}">{{level1}}</el-breadcrumb-item>
     <el-breadcrumb-item>{{level2}}</el-breadcrumb-item>

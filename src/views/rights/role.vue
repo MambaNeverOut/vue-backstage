@@ -144,6 +144,6 @@ export default {
 <style lang='less' scoped>
 .addRoleBtn {
   display: block;
-  margin: 20px 0 20px 10px;
+  margin: 0 0 15px 15px;
 }
 </style>
