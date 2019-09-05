@@ -29,10 +29,12 @@
           </el-form-item>
           <el-form-item label="商品分类">
             <!-- 级联选择器 -->
+            {{selectedOptions}}
             <el-cascader
               v-model="selectedOptions"
               :options="options"
-              :props="{ expandTrigger: 'hover', defaultProp}"
+              expand-trigger="hover"
+              :props="defaultProp"
               @change="handleChange"
             ></el-cascader>
           </el-form-item>
@@ -63,16 +65,31 @@ export default {
       },
       // 级联选择器绑定的数据
       options: [],
-      selectedOptions: [],
+      selectedOptions: [1, 3, 6],
       defaultProp: {
-        label: "",
-        value: "",
-        children: ""
+        label: "cat_name",
+        value: "cat_id",
+        children: "children"
       }
     };
   },
+  created() {
+    this.getCateList();
+  },
   methods: {
-    handleChange() {}
+    handleChange(value) {
+      // console.log(value);
+      // if (this.addForm.goods_cat.length < 3) {
+      //   this.addForm.goods_cat = [];
+      // }
+    },
+    getCateList() {
+      this.axios.get("categories", { params: { type: 3 } }).then(res => {
+        // console.log(res);
+        this.options = res.data.data;
+        // console.log(this.options);
+      });
+    }
   }
 };
 </script>
