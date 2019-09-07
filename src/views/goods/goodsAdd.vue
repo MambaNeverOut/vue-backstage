@@ -66,26 +66,40 @@
             </el-upload>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane name="5" label="商品内容"></el-tab-pane>
+        <el-tab-pane name="5" label="商品内容">
+          <el-form-item>
+            <el-button type="primary" @click="addGoods()">点我-添加商品</el-button>
+            <quill-editor v-model="form.goods_introduce"></quill-editor>
+          </el-form-item>
+        </el-tab-pane>
       </el-tabs>
     </el-form>
   </div>
 </template> 
 
 <script>
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+
+import { quillEditor } from "vue-quill-editor";
 export default {
+  components: {
+    quillEditor
+  },
   data() {
     return {
       active: "1",
       form: {
         //表单数据
         goods_name: "",
-        goods_cat: "",
         goods_price: "",
         goods_number: "",
         goods_introduce: "",
-        pics: "",
-        attrs: ""
+
+        goods_cat: "",
+        pics: [],
+        attrs: []
       },
       // 级联选择器绑定的数据
       options: [],
@@ -121,15 +135,12 @@ export default {
     tabChange() {
       if (this.active === "2") {
         if (this.selectedOptions.length !== 3) {
-          console.log(this.selectedOptions.length);
-
           this.$message.warning("请先选择商品的三级分类");
           return;
         }
         this.axios
           .get(`categories/${this.selectedOptions[2]}/attributes?sel=many`)
           .then(res => {
-            console.log(res);
             this.arrDyparams = res.data.data;
             this.arrDyparams.forEach(item => {
               item.attr_vals =
@@ -146,15 +157,30 @@ export default {
         this.axios
           .get(`categories/${this.selectedOptions[2]}/attributes?sel=only`)
           .then(res => {
-            console.log(res);
             this.arrStaticparams = res.data.data;
           });
       }
     },
     handlePreview(file) {},
-    handleRemove(file) {},
-    handleSuccess(file) {
+    handleRemove(file) {
       console.log(file);
+
+      let Index = this.form.pics.findIndex(item => {
+        return item.pic === file.response.data.tmp_path;
+      });
+      this.form.pics.splice(Index, 1);
+      console.log(this.form.pics);
+    },
+    handleSuccess(file) {
+      this.form.pics.push({
+        pic: file.data.tmp_path
+      });
+    },
+    addGoods() {
+      this.form.goods_cat = this.selectedOptions.join(",");
+      this.axios.post().then(res => {
+        console.log(res);
+      });
     }
   }
 };
@@ -174,5 +200,8 @@ export default {
   // height: 400px;
   // overflow: auto;
   text-align: left;
+  .quill-editor {
+    height: 300px;
+  }
 }
 </style>
