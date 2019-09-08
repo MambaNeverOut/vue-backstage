@@ -1,5 +1,5 @@
 <template>
-  <div class>
+  <el-card>
     <bread-crumb level1="商品管理" level2="商品列表"></bread-crumb>
     <!-- 提示信息 -->
     <el-alert title="添加商品信息" type="success" center show-icon></el-alert>
@@ -74,7 +74,7 @@
         </el-tab-pane>
       </el-tabs>
     </el-form>
-  </div>
+  </el-card>
 </template> 
 
 <script>
