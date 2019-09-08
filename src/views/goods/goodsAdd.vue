@@ -4,7 +4,7 @@
     <!-- 提示信息 -->
     <el-alert title="添加商品信息" type="success" center show-icon></el-alert>
     <!-- 步骤条 -->
-    <el-step :active="1*active" align-center finish-status="success">
+    <el-step :active="active - 0" align-center finish-status="success">
       <el-step description="基本信息"></el-step>
       <el-step description="商品参数"></el-step>
       <el-step description="商品属性"></el-step>
@@ -178,8 +178,18 @@ export default {
     },
     addGoods() {
       this.form.goods_cat = this.selectedOptions.join(",");
-      this.axios.post().then(res => {
+      // 动态参数数组
+      let arr1 = this.arrDyparams.map(item => {
+        return { attr_id: item.attr_id, attr_value: item.attr_vals };
+      });
+      // 静态参数数组
+      let arr2 = this.arrStaticparams.map(item => {
+        return { attr_id: item.attr_id, attr_value: item.attr_vals };
+      });
+      this.form.attrs = [...arr1, ...arr2];
+      this.axios.post(`goods`, this.form).then(res => {
         console.log(res);
+        this.$router.push({ name: "goods" });
       });
     }
   }
