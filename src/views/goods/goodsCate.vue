@@ -30,7 +30,6 @@
     </el-dialog>
 
     <el-table :data="tableList" style="width: 100%">
-      <!-- <el-table-column label="分类名称" prop="cat_name"></el-table-column> -->
       <!-- 
         treeKey 节点唯一标识 id
         parentKey 父节点的id
