@@ -3,11 +3,11 @@
     <bread-crumb level1="商品管理" level2="商品分类"></bread-crumb>
     <el-row>
       <el-col :span="24" class="searchArea">
-        <el-button type="primary" @click="showAddDialog">添加分类</el-button>
+        <el-button type="primary" @click="addGoodCate()">添加分类</el-button>
       </el-col>
     </el-row>
     <!-- 添加分类对话框 -->
-    <el-dialog title="添加分类" :visible.sync="dialogFormVisibleAdd">
+    <el-dialog title="添加分类" :visible.sync="diaFormVisibleAdd">
       <el-form :model="form">
         <el-form-item label="分类名称" :label-width="formLabelWidth">
           <el-input auto-complete="off"></el-input>
@@ -15,22 +15,35 @@
         <el-form-item label="分类" :label-width="formLabelWidth">
           <el-cascader
             v-model="selectedOptions"
-            :options="options"
+            :options="casList"
             expand-trigger="hover"
             :props="defaultProp"
-            @change="handleChange"
+            change-on-select
             clearable
           ></el-cascader>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+        <el-button @click="diaFormVisibleAdd = false">取 消</el-button>
         <el-button type="primary" @click="addCate() ">确 定</el-button>
       </div>
     </el-dialog>
 
-    <el-table :data="tableList" border style="width: 100%">
-      <!-- <el-table-column type="index" width="50"></el-table-column> -->
+    <el-table :data="tableList" style="width: 100%">
+      <!-- 
+        treeKey 节点唯一标识 id
+        parentKey 父节点的id
+        levelKey 当前节点的级别
+        childKey 子节点
+      -->
+      <el-tree-grid
+        prop="cat_name"
+        label="分类名称"
+        treeKey="cat_id"
+        parentKey="cat_pid"
+        levelKey="cat_level"
+        childKey="children"
+      ></el-tree-grid>
       <el-table-column label="级别">
         <template slot-scope="scope">
           <span v-if="scope.row.cat_level===0">一级</span>
@@ -60,7 +73,8 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
-      :page-size="[5, 10, 15, 20]"
+      :page-sizes="[5, 10, 15, 20]"
+      :page-size="pagesize"
       layout="total, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
@@ -68,22 +82,26 @@
 </template>
 
 <script>
+// 引入element-tree-grid
+var ElTreeGrid = require("element-tree-grid");
 export default {
-  components: {},
+  components: {
+    ElTreeGrid
+  },
   data() {
     return {
       tableList: [],
       pagenum: 1,
       pagesize: 10,
       total: 1,
-      disFormVisibleAdd: false,
+      diaFormVisibleAdd: false,
       form: {
         cat_pid: -1,
         cat_name: "",
         cat_level: -1
       },
       formLabelWidth: "140px",
-      caslist: [],
+      casList: [],
       selectedOptions: [],
       defaultProp: {
         value: "cat_id",
@@ -109,7 +127,24 @@ export default {
         });
     },
     showAddDialog() {},
-    addCate() {}
+    addCate() {},
+    addGoodCate() {
+      this.axios.get(`categories?type=2`).then(res => {
+        console.log(res);
+        this.casList = res.data.data;
+
+        this.diaFormVisibleAdd = true;
+      });
+    },
+    handleSizeChange(val) {
+      this.pagesize = value;
+      this.pagenum = 1;
+      this.getGoodsCate();
+    },
+    handleCurrentChange(val) {
+      this.pagenum = val;
+      this.getGoodsCate();
+    }
   }
 };
 </script>
