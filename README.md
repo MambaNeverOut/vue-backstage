@@ -28,7 +28,7 @@ npm run lint
 ### 
 项目简介：后台管理系统
 
-技术栈：less	Element UI	axios	moment 	v-router	vue-cli
+技术栈：less	Element UI	axios	moment 	v-router	vue-cli	vue-quill-editor	vue-tree-grid
 
 配置全局路由守卫，确保用户登录以后才可以访问。
 
