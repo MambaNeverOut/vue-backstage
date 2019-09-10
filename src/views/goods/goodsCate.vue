@@ -46,14 +46,14 @@
         childKey="children"
       ></el-tree-grid>
       <el-table-column label="级别">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <span v-if="scope.row.cat_level===0">一级</span>
           <span v-else-if="scope.row.cat_level===1">二级</span>
           <span v-else-if="scope.row.cat_level===2">三级</span>
         </template>
       </el-table-column>
       <el-table-column label="是否有效">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <span v-if="scope.row.cat_deleted===false">有效</span>
           <span v-else-if="scope.row.cat_deleted===true">无效</span>
         </template>
@@ -221,7 +221,7 @@ export default {
       });
     },
     handleSizeChange(val) {
-      this.pagesize = value;
+      this.pagesize = val;
       this.pagenum = 1;
       this.getGoodsCate();
     },

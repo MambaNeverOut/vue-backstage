@@ -22,7 +22,7 @@
         <el-button type="danger">设置动态参数</el-button>
         <el-table :data="arrDyparams" style="width: 100%">
           <el-table-column type="expand" label="#">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-tag
                 :key="tag"
                 v-for="tag in scope.row.attr_vals"
@@ -44,7 +44,7 @@
           </el-table-column>
           <el-table-column label="属性名称" prop="attr_name"></el-table-column>
           <el-table-column label="操作">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope)"></el-button>
               <el-button type="danger" icon="el-icon-delete" circle @click="remove(scope)"></el-button>
             </template>
@@ -55,7 +55,7 @@
         <el-button type="danger">设置静态参数</el-button>
         <el-table :data="arrStaticparams" style="width: 100%">
           <el-table-column type="expand" label="#">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-tag
                 :key="tag"
                 v-for="tag in scope.row.attr_vals"
@@ -78,7 +78,7 @@
           <el-table-column label="属性名称" prop="attr_name"></el-table-column>
           <el-table-column label="属性值" prop="attr_vals"></el-table-column>
           <el-table-column label="操作">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope)"></el-button>
               <el-button type="danger" icon="el-icon-delete" circle @click="remove(scope)"></el-button>
             </template>
