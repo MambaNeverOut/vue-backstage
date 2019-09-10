@@ -13,6 +13,7 @@
           <el-input v-model="form.cat_name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="分类" :label-width="formLabelWidth">
+          {{selectedOptions}}
           <el-cascader
             v-model="selectedOptions"
             :options="casList"
@@ -47,8 +48,8 @@
       <el-table-column label="级别">
         <template slot-scope="scope">
           <span v-if="scope.row.cat_level===0">一级</span>
-          <span v-else-if="scope.row.cat_level===2">二级</span>
-          <span v-else-if="scope.row.cat_level===3">三级</span>
+          <span v-else-if="scope.row.cat_level===1">二级</span>
+          <span v-else-if="scope.row.cat_level===2">三级</span>
         </template>
       </el-table-column>
       <el-table-column label="是否有效">
