@@ -14,9 +14,10 @@ Vue.use(ElementUI)
 
 // 配置全局axios请求的baseURL
 // axios.defaults.baseURL = "http://3.112.132.86:8888/api/private/v1/"
-axios.defaults.baseURL = "http://www.xiaomadagege.cn:8888/api/private/v1/"
+// axios.defaults.baseURL = "http://www.xiaomadagege.cn:8888/api/private/v1/"
 // axios.defaults.baseURL = "http://54.65.230.22:8878/api/private/v1/"
 // axios.defaults.baseURL = 'http://api.xiaomadagege.cn:8808/api/private/v1/'
+axios.defaults.baseURL = 'http://api.xiaomadagege.cn:3001/api/private/v1/'
 
 
 // 这个方法（axios拦截器）什么时候出发？发送axios请求时触发

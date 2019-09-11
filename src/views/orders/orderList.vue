@@ -41,7 +41,7 @@
               icon="el-icon-location"
               circle
               title="物流信息"
-              @click="showWuliuDialog"
+              @click="showLogisticsDialog"
             ></el-button>
           </template>
         </el-table-column>
@@ -78,7 +78,7 @@
     </el-dialog>
 
     <!-- 物流信息的对话框 -->
-    <el-dialog title="物流信息" :visible.sync="wuliuDialogVisible" width="50%">
+    <!-- <el-dialog title="物流信息" :visible.sync="dialogLogisticsVisible" width="50%">
       <el-steps direction="vertical" :active="1">
         <el-step
           v-for="(item, i) in wuliuInfo"
@@ -87,7 +87,7 @@
           :description="item.context"
         ></el-step>
       </el-steps>
-    </el-dialog>
+    </el-dialog>-->
   </div>
 </template>
 
@@ -117,7 +117,10 @@ export default {
         ]
       },
       cityData: [],
-      selectedOptions: []
+      selectedOptions: [],
+      // 物流信息对话框
+      dialogLogisticsVisible: false,
+      logisticsInfo: []
     };
   },
   created() {
@@ -136,6 +139,15 @@ export default {
     showEditDia() {
       this.dialogFormVisible = true;
       this.cityData = cityData;
+    },
+    showLogisticsDialog() {
+      this.axios.get("/kuaidi/619915933338").then(res => {
+        if (res.data.meta.status !== 200) {
+          return this.$message.error("获取物流信息失败！");
+        }
+        this.logisticsInfo = res.data;
+        this.dialogLogisticsVisible = true;
+      });
     },
     handleSizeChange(val) {
       this.pagesize = val;
