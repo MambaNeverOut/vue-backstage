@@ -25,7 +25,7 @@
         </el-table-column>
         <el-table-column label="是否发货" prop="is_send"></el-table-column>
         <el-table-column label="下单时间" prop="create_time" width="140">
-          <template v-slot="scope">{{scope.row.create_time | dateFormat}}</template>
+          <template v-slot="scope">{{scope.row.create_time | formatDate}}</template>
         </el-table-column>
         <el-table-column label="操作" width="140">
           <template v-slot="scope">
@@ -34,7 +34,7 @@
               icon="el-icon-edit"
               circle
               title="修改订单地址"
-              @click="addressDialogVisible=true"
+              @click="showEditDia"
             ></el-button>
             <el-button
               type="success"
@@ -58,7 +58,7 @@
     </el-card>
     <el-dialog title="修改订单地址" :visible.sync="dialogFormVisible" width="50%">
       <el-form :model="addressForm" :rules="addressFormRules">
-        <el-form-item label="省市区/县">
+        <el-form-item label="省市区/县" prop="address1">
           <!-- 使用级联选择器，加载省市区县的数据 -->
           <el-cascader
             expand-trigger="hover"
@@ -67,7 +67,7 @@
             v-model="selectedOptions"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="详细地址">
+        <el-form-item label="详细地址" prop="address2">
           <el-input v-model="addressForm.address"></el-input>
         </el-form-item>
       </el-form>
@@ -92,6 +92,8 @@
 </template>
 
 <script>
+import cityData from "@/assets/city_data.js";
+
 export default {
   components: {},
   data() {
@@ -130,6 +132,10 @@ export default {
           this.orderList = res.data.data.goods;
           this.total = res.data.data.total;
         });
+    },
+    showEditDia() {
+      this.dialogFormVisible = true;
+      this.cityData = cityData;
     },
     handleSizeChange(val) {
       this.pagesize = val;
