@@ -59,16 +59,9 @@ export default {
       menusList: []
     };
   },
-  // beforeCreate() {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     this.$router.push("./login");
-  //   }
-  // },
   methods: {
     getMenus() {
       this.axios.get("menus").then(res => {
-        // console.log(res);
         this.menusList = res.data.data;
       });
     },

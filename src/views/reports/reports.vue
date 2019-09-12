@@ -1,12 +1,14 @@
 <template>
-  <el-card>
-    <el-breadcrumb separator="/" style="margin-bottom: 15px">
+  <div>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>数据统计</el-breadcrumb-item>
       <el-breadcrumb-item>数据报表</el-breadcrumb-item>
     </el-breadcrumb>
-    <div id="main" style="width: 800px;height: 400px"></div>
-  </el-card>
+    <el-card>
+      <div id="main" style="width: 800px;height: 400px"></div>
+    </el-card>
+  </div>
 </template>
 
 <script>
