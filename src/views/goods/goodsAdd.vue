@@ -1,6 +1,10 @@
 <template>
   <el-card>
-    <bread-crumb level1="商品管理" level2="商品列表"></bread-crumb>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+      <el-breadcrumb-item>商品列表</el-breadcrumb-item>
+    </el-breadcrumb>
     <!-- 提示信息 -->
     <el-alert title="添加商品信息" type="success" center show-icon></el-alert>
     <!-- 步骤条 -->

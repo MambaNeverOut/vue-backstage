@@ -1,6 +1,10 @@
 <template>
   <el-card class>
-    <bread-crumb level1="商品管理" level2="商品分类"></bread-crumb>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+      <el-breadcrumb-item>商品分类</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-row>
       <el-col :span="24" class="searchArea">
         <el-button type="primary" @click="addGoodCate()">添加分类</el-button>
