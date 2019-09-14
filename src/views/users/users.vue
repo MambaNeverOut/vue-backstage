@@ -58,7 +58,7 @@
             ></el-button>
             <el-button
               type="success"
-              icon="el-icon-check"
+              icon="el-icon-setting"
               circle
               @click="showSetUserRoleDia(scope.row)"
             ></el-button>

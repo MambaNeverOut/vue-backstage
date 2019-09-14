@@ -63,7 +63,6 @@ export default {
       this.$refs.loginForm.validate(v => {
         if (v) {
           this.axios.post("login", this.form).then(res => {
-            console.log(res);
             if (res.data.meta.status === 400) {
               this.$message.error("亲！" + res.data.meta.msg);
             } else {

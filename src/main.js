@@ -40,7 +40,6 @@ Vue.filter('formatDate', (v) => {
 })
 
 // 全局自定义组件
-Vue.component(breadCrumb.name, breadCrumb)
 
 new Vue({
   router,

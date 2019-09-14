@@ -1,10 +1,14 @@
 <template>
   <div class="home">
+    <el-header style="height: 80px;">
+      <img src="@/assets/logo.jpg" alt height="80px" width="200px" />
+      <router-link to="/home" style="text-decoration: none;">
+        <h2>后台管理系统</h2>
+      </router-link>
+      <el-button type="info" @click="signOut">退出</el-button>
+    </el-header>
     <el-container>
-      <!-- 左上角logo -->
       <el-aside width="200px">
-        <div class="logo"></div>
-
         <!-- 侧边栏 -->
         <el-menu
           default-active="2"
@@ -14,15 +18,16 @@
           active-text-color="yellowgreen"
           :router="true"
         >
-          <el-submenu :index="index + ''" v-for="(item, index) in menusList" :key="item.id">
+          <el-submenu :index="i + ''" v-for="(item, i) in menusList" :key="item.id">
             <template slot="title">
-              <i class="el-icon-location"></i>
+              <i :class="['iconfont', iconlist[i]]"></i>
               <span>{{item.authName}}</span>
             </template>
             <el-menu-item
               v-for="(item, index) in item.children"
               :key="index"
               :index="'/home/'+ item.path"
+              class="childLevel"
             >
               <i class="el-icon-menu"></i>
               {{item.authName}}
@@ -31,21 +36,10 @@
         </el-menu>
       </el-aside>
 
-      <el-container>
-        <!-- 顶部栏 -->
-        <el-header>
-          <i class="el-icon-tickets"></i>
-          <h3>后台管理系统</h3>
-          <div>
-            您好，客户
-            <a @click="signOut">退出</a>
-          </div>
-        </el-header>
-        <!-- 内容区 -->
-        <el-main>
-          <router-view></router-view>
-        </el-main>
-      </el-container>
+      <!-- 内容区 -->
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -56,7 +50,14 @@ export default {
   components: {},
   data() {
     return {
-      menusList: []
+      menusList: [],
+      iconlist: [
+        "icon-users",
+        "icon-tijikongjian",
+        "icon-shangpin",
+        "icon-danju",
+        "icon-baobiao"
+      ]
     };
   },
   methods: {
@@ -83,32 +84,31 @@ export default {
 }
 .home {
   height: 100%;
-  .el-container {
-    height: 100%;
-    .el-aside {
-      background: #545c64;
-      .logo {
-        height: 60px;
-        background: url(../../assets/logo.jpg);
-        background-size: cover;
-        background-color: #fff;
-      }
+}
+.el-container {
+  height: 100%;
+  .el-aside {
+    background: #545c64;
+    .iconfont {
+      margin-right: 8px;
     }
-    .el-header {
-      background: #545c64;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: #fff;
-      i {
-        cursor: pointer;
-        font-size: 35px;
-      }
-      a {
-        cursor: pointer;
-        color: #409eff;
-      }
+    .childLevel {
+      margin-left: 20px;
     }
+  }
+}
+.el-header {
+  background: #545c64;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  color: #fff;
+  h2 {
+    color: #fff;
+  }
+  .el-button {
+    margin-right: 20px;
   }
 }
 </style>
