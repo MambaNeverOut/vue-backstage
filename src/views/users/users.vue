@@ -78,18 +78,18 @@
       <!-- 对话框 -->
       <!-- 添加用户对话框 -->
       <el-dialog title="添加用户" :visible.sync="dialogFormVisibleAdd">
-        <el-form :model="form">
+        <el-form :model="addForm" :rules="addFormRules">
           <el-form-item label="用户名" label-width="formLabelWidth">
-            <el-input v-model="form.username" autocomplete="off"></el-input>
+            <el-input v-model="addForm.username" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="密 码" label-width="formLabelWidth">
-            <el-input v-model="form.password" autocomplete="off"></el-input>
+            <el-input v-model="addForm.password" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="邮 箱" label-width="formLabelWidth">
-            <el-input v-model="form.email" autocomplete="off"></el-input>
+            <el-input v-model="addForm.email" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="电 话" label-width="formLabelWidth">
-            <el-input v-model="form.mobile" autocomplete="off"></el-input>
+            <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -99,15 +99,15 @@
       </el-dialog>
       <!-- 编辑用户对话框 -->
       <el-dialog title="编辑用户" :visible.sync="dialogFormVisibleEdit">
-        <el-form :model="form">
+        <el-form :model="editForm" :rules="editFormRules">
           <el-form-item label="用户名" label-width="formLabelWidth">
-            <el-input disabled v-model="form.username" autocomplete="off"></el-input>
+            <el-input disabled v-model="editForm.username" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="邮 箱" label-width="formLabelWidth">
-            <el-input v-model="form.email" autocomplete="off"></el-input>
+            <el-input v-model="editForm.email" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="电 话" label-width="formLabelWidth">
-            <el-input v-model="form.mobile" autocomplete="off"></el-input>
+            <el-input v-model="editForm.mobile" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -140,17 +140,79 @@ import { log } from "util";
 export default {
   components: {},
   data() {
+    // 在 data() 中，且 return 之前，自定义一些校验规则
+    let checkEmail = (rule, value, callback) => {
+      if (
+        /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(value) ===
+        false
+      ) {
+        return callback(new Error("邮箱地址不正确"));
+      }
+      // 校验通过
+      callback();
+    };
+
+    // 校验手机号
+    let checkMobile = (rule, value, callback) => {
+      if (/^1\d{10}$/.test(value) === false) {
+        return callback(new Error("手机号不正确"));
+      }
+      callback();
+    };
     return {
       tableData: [],
       query: "",
       dialogFormVisibleAdd: false,
-      dialogFormVisibleEdit: false,
-      dialogFormVisibleRole: false,
-      form: {
+      addForm: {
         username: "",
         password: "",
         email: "",
         mobile: ""
+      },
+      addFormRules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 3, max: 6, message: "长度在 3 到 6 个字符", trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
+        ],
+        email: [
+          { required: true, message: "请输入邮箱", trigger: "blur" },
+          { validator: checkEmail, trigger: "blur" }
+        ],
+        mobile: [
+          { required: true, message: "请输入手机", trigger: "blur" },
+          { validator: checkMobile, trigger: "blur" }
+        ]
+      },
+      dialogFormVisibleEdit: false,
+      editForm: {
+        id: "",
+        username: "",
+        email: "",
+        mobile: ""
+      },
+      // 编辑的表单验证规则
+      editFormRules: {
+        email: [
+          { required: true, message: "请输入邮箱", trigger: "blur" },
+          // 使用自定义的邮箱校验规则
+          { validator: checkEmail, trigger: "blur" }
+        ],
+        mobile: [
+          { required: true, message: "请输入手机", trigger: "blur" },
+          // 使用自定义的手机号验证规则
+          { validator: checkMobile, trigger: "blur" }
+        ]
+      },
+      dialogFormVisibleRole: false,
+      form: {
+        id: "", // 用户的Id
+        role_name: "", // 用户当前的角色
+        username: "", // 用户的名称
+        rid: "" // 要为用户分配的新角色的Id
       },
       // 分页数据
       total: -1,
@@ -198,7 +260,7 @@ export default {
       });
     },
     editUser() {
-      this.axios.put(`users/${this.form.id}`, this.form);
+      this.axios.put(`users/${this.editForm.id}`, this.editForm);
       this.dialogFormVisibleEdit = false;
       this.getUsers();
     },
@@ -214,7 +276,7 @@ export default {
       this.axios.put(`users/${user.id}/state/${user.mg_state}`);
     },
     showAddUserDia() {
-      this.form = {};
+      this.addForm = {};
       this.dialogFormVisibleAdd = true;
     },
     showDelUserMsgBox(userId) {
@@ -244,7 +306,7 @@ export default {
         });
     },
     showEditUserDia(user) {
-      this.form = user;
+      this.editForm = user;
       this.dialogFormVisibleEdit = true;
     },
     showSetUserRoleDia(user) {

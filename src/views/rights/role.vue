@@ -121,7 +121,7 @@
         ></el-tree>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisibleRight = false">取 消</el-button>
-          <el-button type="primary" @click="setRoleRight()">确 定</el-button>
+          <el-button type="primary" @click="setRoleRight">确 定</el-button>
         </div>
       </el-dialog>
     </el-card>
