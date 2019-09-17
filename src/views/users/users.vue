@@ -238,10 +238,11 @@ export default {
         })
         .then(res => {
           console.log(res);
-          if (res.data.meta.status === 200) {
-            this.tableData = res.data.data.users;
-            this.total = res.data.data.total;
+          if (res.data.meta.status !== 200) {
+            return this.$message.error("请求用户列表失败！");
           }
+          this.tableData = res.data.data.users;
+          this.total = res.data.data.total;
         });
     },
     searchUsers() {
@@ -249,7 +250,7 @@ export default {
     },
     addUser() {
       this.dialogFormVisibleAdd = false;
-      this.axios.post("users", this.form).then(res => {
+      this.axios.post("users", this.addForm).then(res => {
         if (res.data.meta.status === 201) {
           this.$message.success(res.data.meta.msg);
           this.getUsers();
@@ -260,20 +261,34 @@ export default {
       });
     },
     editUser() {
-      this.axios.put(`users/${this.editForm.id}`, this.editForm);
-      this.dialogFormVisibleEdit = false;
-      this.getUsers();
+      this.axios.put(`users/${this.editForm.id}`, this.editForm).then(res => {
+        if (res.data.meta.status !== 200) {
+          return this.$message.error("编辑用户失败！");
+        }
+        this.$message.success("编辑用户成功！");
+        this.dialogFormVisibleEdit = false;
+        this.getUsers();
+      });
     },
     setRole() {
       this.axios
         .put(`users/${this.currUserId}/role`, { rid: this.currRoleId })
         .then(res => {
-          console.log(res);
+          if (res.data.meta.status !== 200) {
+            return this.$message.error("为用户分配新角色失败！");
+          }
+          this.$message.success("为用户分配新角色成功！");
+          this.dialogFormVisibleRole = false;
+          this.getUsers();
         });
-      this.dialogFormVisibleRole = false;
     },
     changeUserState(user) {
-      this.axios.put(`users/${user.id}/state/${user.mg_state}`);
+      this.axios.put(`users/${user.id}/state/${user.mg_state}`).then(res => {
+        if (res.data.meta.status !== 200) {
+          return this.$message.error("修改用户状态失败！");
+        }
+        this.$message.success("修改用户状态成功！");
+      });
     },
     showAddUserDia() {
       this.addForm = {};
