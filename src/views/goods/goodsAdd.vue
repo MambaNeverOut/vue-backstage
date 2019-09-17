@@ -17,24 +17,24 @@
     </el-step>
     <!-- 表单 -->
     <el-form label-position="top" label-width="80px" :model="form">
-      <el-tabs @tab-click="tabChange()" v-model="active" tab-position="left">
+      <el-tabs :before-leave="beforeTabLeave" v-model="active" tab-position="left">
         <el-tab-pane name="1" label="基本信息">
-          <el-form-item label="商品名称">
+          <el-form-item label="商品名称" prop="goods_name">
             <el-input v-model="form.goods_name"></el-input>
           </el-form-item>
-          <el-form-item label="商品价格">
-            <el-input v-model="form.goods_price"></el-input>
+          <el-form-item label="商品价格" prop="goods_price">
+            <el-input v-model="form.goods_price" type="number" min="0"></el-input>
           </el-form-item>
           <el-form-item label="商品重量">
-            <el-input v-model="form.goods_weight"></el-input>
+            <el-input v-model="form.goods_weight" type="number" min="0"></el-input>
           </el-form-item>
           <el-form-item label="商品数量">
-            <el-input v-model="form.goods_number"></el-input>
+            <el-input v-model="form.goods_number" type="number" min="0"></el-input>
           </el-form-item>
           <el-form-item label="商品分类">
             <!-- 级联选择器 -->
             <el-cascader
-              v-model="selectedOptions"
+              v-model="form.goods_cat"
               :options="options"
               expand-trigger="hover"
               :props="defaultProp"
@@ -107,7 +107,7 @@ export default {
       },
       // 级联选择器绑定的数据
       options: [],
-      selectedOptions: [1, 3, 6],
+      // selectedOptions: [1, 3, 6],
       defaultProp: {
         label: "cat_name",
         value: "cat_id",
@@ -123,57 +123,27 @@ export default {
     };
   },
   created() {
-    // console.log(this.options);
-
     this.getCateList();
   },
   methods: {
     handleChange() {},
     getCateList() {
       this.axios.get("categories", { params: { type: 3 } }).then(res => {
-        // console.log(res);
         this.options = res.data.data;
-        // console.log(this.options);
       });
     },
-    tabChange() {
-      if (this.active === "2") {
-        if (this.selectedOptions.length !== 3) {
-          this.$message.warning("请先选择商品的三级分类");
-          return;
-        }
-        this.axios
-          .get(`categories/${this.selectedOptions[2]}/attributes?sel=many`)
-          .then(res => {
-            this.arrDyparams = res.data.data;
-            this.arrDyparams.forEach(item => {
-              item.attr_vals =
-                item.attr_vals.length === 0
-                  ? []
-                  : item.attr_vals.trim().split(",");
-            });
-          });
-      } else if (this.active === "3") {
-        if (this.selectedOptions.length !== 3) {
-          this.$message.warning("请先选择商品的三级分类");
-          return;
-        }
-        this.axios
-          .get(`categories/${this.selectedOptions[2]}/attributes?sel=only`)
-          .then(res => {
-            this.arrStaticparams = res.data.data;
-          });
+    beforeTabLeave() {
+      if (this.form.goods_cat.length !== 3) {
+        this.$message.error("请选择商品分类！");
+        return false;
       }
     },
     handlePreview(file) {},
     handleRemove(file) {
-      console.log(file);
-
       let Index = this.form.pics.findIndex(item => {
         return item.pic === file.response.data.tmp_path;
       });
       this.form.pics.splice(Index, 1);
-      console.log(this.form.pics);
     },
     handleSuccess(file) {
       this.form.pics.push({
@@ -181,7 +151,7 @@ export default {
       });
     },
     addGoods() {
-      this.form.goods_cat = this.selectedOptions.join(",");
+      this.form.goods_cat = this.form.goods_cat.join(",");
       // 动态参数数组
       let arr1 = this.arrDyparams.map(item => {
         return { attr_id: item.attr_id, attr_value: item.attr_vals };
@@ -192,8 +162,11 @@ export default {
       });
       this.form.attrs = [...arr1, ...arr2];
       this.axios.post(`goods`, this.form).then(res => {
-        console.log(res);
-        this.$router.push({ name: "goods" });
+        this.$router.push("goods");
+        if (res.data.meta.status !== 201) {
+          return this.$message.error("添加商品失败！");
+        }
+        this.$message.success("添加商品成功！");
       });
     }
   }
