@@ -218,7 +218,7 @@ export default {
       this.dialogFormVisibleAdd = true;
     },
     showDelUserMsgBox(userId) {
-      this.$confirm("删除用户?", "提示", {
+      this.$confirm("此操作将永久删除用户?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
