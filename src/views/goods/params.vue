@@ -61,11 +61,11 @@
           <el-table-column type="expand" label="#">
             <template v-slot="scope">
               <el-tag
-                :key="tag"
-                v-for="tag in scope.row.attr_vals"
+                :key="i"
+                v-for="(tag, i) in scope.row.attr_vals"
                 closable
                 :disable-transitions="false"
-                @close="handleClose(scope.row,tag)"
+                @close="handleClose(scope, i)"
               >{{tag}}</el-tag>
               <el-input
                 class="input-new-tag"
@@ -198,6 +198,22 @@ export default {
             .get(`categories/${this.selectedOptions[2]}/attributes?sel=only`)
             .then(res => {
               this.arrStaticparams = res.data.data;
+              // 由于 服务器返回的参数列表中，每一个参数项的 attr_vals 为普通字符串，我们需要使用 字符串的 split 操作，把 attr_vals 用 空格 分割为 数组
+              res.data.data.forEach(item => {
+                // 判断 item.attr_vals 是否为 空字符串，如果不为空，则 进行 分割；
+                // 如果为空，则 不进行分割，直接返回一个空数据，表示没有可选项；
+                item.attr_vals = item.attr_vals
+                  ? item.attr_vals.split(" ")
+                  : [];
+                item.inputVisible = false;
+                item.inputValue = "";
+              });
+              // 数据获取成功以后，应该 根据 activeName 进行判断，从而决定把数据交给哪个表格去渲染；
+              if (this.activeName === "many") {
+                this.arrDyparams = res.data.data;
+              } else {
+                this.arrStaticparams = res.data.data;
+              }
             });
         }
       }
