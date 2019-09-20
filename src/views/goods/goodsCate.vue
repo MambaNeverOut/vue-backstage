@@ -17,7 +17,6 @@
           <el-input v-model="form.cat_name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="分类" :label-width="formLabelWidth">
-          {{selectedOptions}}
           <el-cascader
             v-model="selectedOptions"
             :options="casList"
@@ -151,7 +150,6 @@ export default {
     },
     showEditDialog(scope) {
       this.axios.get(`categories/${scope.cat_id}`).then(res => {
-        console.log(res);
         if (res.data.meta.status !== 200)
           return this.$message.error("获取分类信息失败！");
         this.editForm = res.data.data;
@@ -164,7 +162,6 @@ export default {
           cat_name: this.editForm.cat_name
         })
         .then(res => {
-          console.log(res);
           if (res.data.meta.status !== 200)
             return this.$message.error("更新失败！");
           this.$message.success("更新成功！");
@@ -180,8 +177,6 @@ export default {
       })
         .then(async () => {
           const res = await this.axios.delete(`categories/${scope.cat_id}`);
-          console.log(res);
-
           if (res.data.meta.status === 200) {
             this.$message({
               type: "success",

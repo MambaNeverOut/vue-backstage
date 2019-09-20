@@ -74,7 +74,6 @@ export default {
           }
         })
         .then(res => {
-          console.log(res);
           if (res.data.meta.status !== 200) {
             return this.$message.error("获取商品列表失败！");
           }

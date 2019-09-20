@@ -22,8 +22,8 @@
       </el-col>
     </el-row>
     <el-tabs type="card" v-model="activeName" @tab-click="handleClick()">
-      <el-tab-pane label="动态参数" name="1">
-        <el-button type="danger">设置动态参数</el-button>
+      <el-tab-pane label="动态参数" name="many">
+        <el-button type="primary" @click="setDyParams">设置动态参数</el-button>
         <el-table :data="arrDyparams" style="width: 100%">
           <el-table-column type="expand" label="#">
             <template v-slot="scope">
@@ -55,8 +55,8 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
-      <el-tab-pane label="静态参数" name="2">
-        <el-button type="danger">设置静态参数</el-button>
+      <el-tab-pane label="静态参数" name="only">
+        <el-button type="primary" @click="setStaticParams()">设置静态参数</el-button>
         <el-table :data="arrStaticparams" style="width: 100%">
           <el-table-column type="expand" label="#">
             <template v-slot="scope">
@@ -90,6 +90,38 @@
         </el-table>
       </el-tab-pane>
     </el-tabs>
+    <!-- 添加参数的对话框 -->
+    <el-dialog
+      :title="activeName === 'many' ? '添加动态参数' : '添加静态属性'"
+      :visible.sync="addDialogVisible"
+      width="50%"
+    >
+      <el-form :model="addForm" :rules="addFormRules" label-width="100px">
+        <el-form-item :label="activeName === 'many' ? '动态参数' : '静态属性'" prop="attr_name">
+          <el-input v-model="addForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addParams">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 修改参数的对话框 -->
+    <el-dialog
+      :title="activeName === 'many' ? '修改动态参数' : '修改静态属性'"
+      :visible.sync="editDialogVisible"
+      width="50%"
+    >
+      <el-form :model="editForm" :rules="editFormRules" label-width="100px">
+        <el-form-item :label="activeName === 'many' ? '动态参数' : '静态属性'" prop="attr_name">
+          <el-input v-model="editForm.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editParams">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -106,8 +138,29 @@ export default {
         value: "cat_id",
         children: "children"
       },
-      activeName: "1",
+      activeName: "many",
       tableList: [],
+      // 添加参数
+      addDialogVisible: false,
+      addForm: {
+        attr_name: ""
+      },
+      addFormRules: {
+        attr_name: [
+          { required: true, message: "请添加参数名称", trigger: "blur" }
+        ]
+      },
+      // 修改参数
+      editDialogVisible: false,
+      editForm: {
+        attrId: "", // 要编辑的那个参数的Id
+        attr_name: "" // 要修改的参数的名称
+      },
+      editFormRules: {
+        attr_name: [
+          { required: true, message: "请添加参数名称", trigger: "blur" }
+        ]
+      },
       arrDyparams: [],
       arrStaticparams: [],
       inputVisible: false,
@@ -123,8 +176,6 @@ export default {
         this.axios
           .get(`categories/${this.selectedOptions[2]}/attributes?sel=many`)
           .then(res => {
-            // console.log(res);
-
             this.arrDyparams = res.data.data;
             this.arrDyparams.forEach(item => {
               item.attr_vals =
@@ -132,27 +183,47 @@ export default {
                   ? []
                   : item.attr_vals.trim().split(",");
             });
-            // console.log(this.arrDyparams);
           });
       }
     },
     getGoodCate() {
       this.axios.get(`categories?type=3`).then(res => {
-        // console.log(res);
         this.options = res.data.data;
       });
     },
     handleClick() {
-      if (this.activeName === "2") {
+      if (this.activeName === "only") {
         if (this.selectedOptions.length === 3) {
           this.axios
             .get(`categories/${this.selectedOptions[2]}/attributes?sel=only`)
             .then(res => {
-              console.log(res);
               this.arrStaticparams = res.data.data;
             });
         }
       }
+    },
+    setDyParams() {
+      this.addDialogVisible = true;
+    },
+    setStaticParams() {
+      this.addDialogVisible = true;
+    },
+    addParams() {
+      this.axios
+        .post(`categories/${this.selectedOptions[2]}/attributes`, {
+          attr_name: this.addForm.attr_name,
+          attr_sel: this.activeName // 控制添加的参数类型
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.meta.status !== 201)
+            return this.$message.error("添加参数失败！");
+          this.$message.success("添加参数成功！");
+          // 重新获取参数列表中的数据
+          this.getGoodCate();
+          // 隐藏添加的对话框
+          this.addDialogVisible = false;
+        });
     },
     // 点击x按钮删除
     handleClose(scope, tag) {
@@ -201,6 +272,64 @@ export default {
 
       this.inputVisible = false;
       this.inputValue = "";
+    },
+    showEditDialog(scope) {
+      this.axios
+        .get(
+          `categories/${this.selectedOptions[2]}/attributes/${
+            scope.row.attr_id
+          }`
+        )
+        .then(res => {
+          if (res.data.meta.status !== 200)
+            return this.$message.error("获取参数信息失败！");
+          // 获取参数信息成功后，为 data 中的 editForm 赋值
+          this.editForm.attr_name = res.data.data.attr_name;
+          this.editForm.attrId = res.data.data.attr_id;
+          // 展示 编辑的对话框
+          this.editDialogVisible = true;
+        });
+    },
+    editParams() {
+      this.axios
+        .put(
+          `categories/${this.selectedCate[2]}/attributes/${
+            this.editForm.attrId
+          }`,
+          {
+            attr_name: this.editForm.attr_name,
+            attr_sel: this.activeName
+          }
+        )
+        .then(res => {
+          if (res.data.meta.status !== 200)
+            return this.$message.error("编辑参数信息失败！");
+          this.$message.success("编辑参数信息成功！");
+          this.getGoodCate();
+          this.editDialogVisible = false;
+        });
+    },
+    remove(scope) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(async () => {
+        const res = await this.axios.delete(
+          `categories/${this.selectedOptions[2]}/attributes/${
+            scope.row.attr_id
+          }`
+        );
+        if (res.data.meta.status === 200) {
+          this.getGoodCate();
+          this.$message({
+            type: "success",
+            message: "删除参数成功!"
+          });
+        } else {
+          this.$message.error("删除参数失败");
+        }
+      });
     }
   }
 };

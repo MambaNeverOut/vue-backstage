@@ -8,7 +8,12 @@
       </el-breadcrumb>
       <el-row>
         <el-col :span="8">
-          <el-input placeholder="请输入内容" class="input-with-select" clearable>
+          <el-input
+            placeholder="请输入内容"
+            class="input-with-select"
+            v-model="queryinfo.query"
+            clearable
+          >
             <el-button slot="append" icon="el-icon-search" @click="getOrderList"></el-button>
           </el-input>
         </el-col>
@@ -78,16 +83,16 @@
     </el-dialog>
 
     <!-- 物流信息的对话框 -->
-    <!-- <el-dialog title="物流信息" :visible.sync="dialogLogisticsVisible" width="50%">
+    <el-dialog title="物流信息" :visible.sync="dialogLogisticsVisible" width="50%">
       <el-steps direction="vertical" :active="1">
         <el-step
-          v-for="(item, i) in wuliuInfo"
+          v-for="(item, i) in logisticsInfo"
           :key="i"
           :title="item.time"
           :description="item.context"
         ></el-step>
       </el-steps>
-    </el-dialog>-->
+    </el-dialog>
   </div>
 </template>
 
@@ -98,6 +103,11 @@ export default {
   components: {},
   data() {
     return {
+      queryinfo: {
+        query: "",
+        pagenum: 1,
+        pagesize: 10
+      },
       orderList: [],
       // 分页
       pagenum: 1,
@@ -131,7 +141,6 @@ export default {
       this.axios
         .get(`orders/?pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
         .then(res => {
-          console.log(res);
           this.orderList = res.data.data.goods;
           this.total = res.data.data.total;
         });
